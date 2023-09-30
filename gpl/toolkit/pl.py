@@ -105,7 +105,7 @@ class PseudoLabeler(object):
             data.extend(batch_gpl)
 
         logger.info("Done pseudo labeling and saving data")
-        with open(self.output_path, "w") as f:
+        with open(self.output_path, "w", encoding='utf-8') as f:
             f.writelines(data)
 
         logger.info(f"Saved GPL-training data to {self.output_path}")

@@ -30,7 +30,7 @@ def rescale_gpl_training_data(
     assert gpl_training_data_name in os.listdir(data_dir)
     fpath = os.path.join(data_dir, gpl_training_data_name)
     margins = []
-    with open(fpath, "r") as f:
+    with open(fpath, "r", encoding='utf-8') as f:
         for i, line in enumerate(f):
             margin = float(line.strip().split("\t")[-1])
             margins.append(margin)
@@ -45,7 +45,7 @@ def rescale_gpl_training_data(
         logger.info("Found the rescaled data has already existed. Escaped rescaling")
         return frescaled
 
-    with open(fpath, "r") as fin, open(fpath_rescaled, "w") as fout:
+    with open(fpath, "r", encoding='utf-8') as fin, open(fpath_rescaled, "w") as fout:
         for line in fin:
             items = line.strip().split("\t")
             margin = float(items[-1])

@@ -110,7 +110,7 @@ def evaluate(
 
     os.makedirs(output_dir, exist_ok=True)
     result_path = os.path.join(output_dir, "results.json")
-    with open(result_path, "w") as f:
+    with open(result_path, "w", encoding='utf-8') as f:
         json.dump(
             {
                 "ndcg": ndcg,
@@ -121,7 +121,7 @@ def evaluate(
             },
             f,
             indent=4,
-        )
+        ensure_ascii=False,)
     logger.info(f"Saved evaluation results to {result_path}")
 
 

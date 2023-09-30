@@ -33,10 +33,10 @@ def resize(data_path, output_path, new_size, use_train_qrels: bool = False):
                     nadded += 1
 
     os.makedirs(output_path, exist_ok=True)
-    with open(os.path.join(output_path, "corpus.jsonl"), "w") as f:
+    with open(os.path.join(output_path, "corpus.jsonl"), "w", encoding='utf-8') as f:
         for doc_id, doc in corpus_new.items():
             doc["_id"] = doc_id
-            f.write(json.dumps(doc) + "\n")
+            f.write(json.dumps(doc, ensure_ascii=False) + "\n")
 
     if not nadded:
         logger.info(

@@ -16,10 +16,10 @@ def extract_queries_split(queries: Dict[str, str], qrels: Dict[str, Dict[str, fl
 def save_queries(queries: Dict[str, str], output_dir):
     os.makedirs(output_dir, exist_ok=True)
     save_path = os.path.join(output_dir, "queries.jsonl")
-    with open(save_path, "w") as f:
+    with open(save_path, "w", encoding='utf-8') as f:
         for qid, query in queries.items():
             line_dict = {"_id": qid, "text": query, "metadata": {}}
-            line = json.dumps(line_dict) + "\n"
+            line = json.dumps(line_dict, ensure_ascii=False) + "\n"
             f.write(line)
 
     logger.info(f"Saved (copied) queries into {save_path}")
@@ -30,7 +30,7 @@ def save_qrels(qrels: Dict[str, Dict[str, float]], output_dir, split):
 
     assert split in ["train", "test", "dev"]
     save_path = os.path.join(output_dir, f"qrels/{split}.tsv")
-    with open(save_path, "w") as f:
+    with open(save_path, "w", encoding='utf-8') as f:
         header = "query-id\tcorpus-id\tscore\n"
         f.write(header)
         for qid, rels in qrels.items():

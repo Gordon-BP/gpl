@@ -138,9 +138,9 @@ class NegativeMiner(object):
             result_jsonl.append(line)
 
         logger.info(f"Saving data to {self.output_path}")
-        with open(self.output_path, "w") as f:
+        with open(self.output_path, "w", encoding='utf-8') as f:
             for line in result_jsonl:
-                f.write(json.dumps(line) + "\n")
+                f.write(json.dumps(line, ensure_ascii=False) + "\n")
         logger.info("Done")
 
 
