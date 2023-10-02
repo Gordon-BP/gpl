@@ -65,6 +65,6 @@ def load_sbert(model_name_or_path, pooling=None, max_seq_length=None):
         setattr(
             first_layer, "max_seq_length", max_seq_length
         )  # Set the maximum-sequence length
-        logger.info(f"Set max_seq_length={max_seq_length}")
+        print(f"Set max_seq_length={max_seq_length}")
 
     return model

@@ -46,7 +46,7 @@ class HardNegativeDataset(Dataset):
             tuple_sampled = self._sample_tuple(query_dict)
             if tuple_sampled is None:
                 self.none_indices.add(index)
-                logger.info(f"Invalid query at line {index-1}")
+                print(f"Invalid query at line {index-1}")
             else:
                 break
         (query_id, pos_id, neg_id), (query_text, pos_text, neg_text) = tuple_sampled

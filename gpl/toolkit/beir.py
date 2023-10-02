@@ -22,7 +22,7 @@ def save_queries(queries: Dict[str, str], output_dir):
             line = json.dumps(line_dict, ensure_ascii=False) + "\n"
             f.write(line)
 
-    logger.info(f"Saved (copied) queries into {save_path}")
+    print(f"Saved (copied) queries into {save_path}")
 
 
 def save_qrels(qrels: Dict[str, Dict[str, float]], output_dir, split):
@@ -38,4 +38,4 @@ def save_qrels(qrels: Dict[str, Dict[str, float]], output_dir, split):
                 line = f"{qid}\t{doc_id}\t{score}\n"
                 f.write(line)
 
-    logger.info(f"Saved (copied) qrels into {save_path}")
+    print(f"Saved (copied) qrels into {save_path}")

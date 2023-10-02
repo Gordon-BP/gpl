@@ -39,10 +39,10 @@ def resize(data_path, output_path, new_size, use_train_qrels: bool = False):
             f.write(json.dumps(doc, ensure_ascii=False) + "\n")
 
     if not nadded:
-        logger.info(
+        print(
             f"Resized the corpus in {data_path} to {output_path} with new size {new_size}"
         )
     else:
-        logger.info(
+        print(
             f"Resized the corpus in {data_path} to {output_path} with new size {new_size} + {nadded} (including the documents mentioned in the train qrels)"
         )

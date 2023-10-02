@@ -21,7 +21,7 @@ class MarginDistillationLoss(nn.Module):
         self.scale = scale
         assert similarity_fct in ["dot", "cos_sim"]
         self.similarity_fct = similarity_fct
-        logger.info(f"Set GPL score function to {similarity_fct}")
+        print(f"Set GPL score function to {similarity_fct}")
         self.loss_fct = nn.MSELoss()
 
     def forward(self, sentence_features: Iterable[Dict[str, Tensor]], labels: Tensor):

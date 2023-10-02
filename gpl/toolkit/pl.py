@@ -80,7 +80,7 @@ class PseudoLabeler(object):
         data = []
 
         hard_negative_iterator = iter(self.hard_negative_dataloader)
-        logger.info("Begin pseudo labeling")
+        print("Begin pseudo labeling")
         for _ in tqdm.trange(self.total_steps):
             try:
                 batch = next(hard_negative_iterator)
@@ -104,8 +104,8 @@ class PseudoLabeler(object):
             )
             data.extend(batch_gpl)
 
-        logger.info("Done pseudo labeling and saving data")
+        print("Done pseudo labeling and saving data")
         with open(self.output_path, "w", encoding='utf-8') as f:
             f.writelines(data)
 
-        logger.info(f"Saved GPL-training data to {self.output_path}")
+        print(f"Saved GPL-training data to {self.output_path}")

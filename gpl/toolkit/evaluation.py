@@ -34,7 +34,7 @@ def evaluate(
     pooling_module: sentence_transformers.models.Pooling = model._last_module()
     assert type(pooling_module) == sentence_transformers.models.Pooling
     pooling_mode = pooling_module.get_pooling_mode_str()
-    logger.info(
+    print(
         f"Running evaluation with setting: max_seq_length = {max_seq_length}, score_function = {score_function}, split = {split} and pooling: {pooling_mode}"
     )
 
@@ -122,7 +122,7 @@ def evaluate(
             f,
             indent=4,
         ensure_ascii=False,)
-    logger.info(f"Saved evaluation results to {result_path}")
+    print(f"Saved evaluation results to {result_path}")
 
 
 if __name__ == "__main__":

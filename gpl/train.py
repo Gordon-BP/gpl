@@ -42,7 +42,7 @@ def train(
     evaluation_data: str = None,
     evaluation_output: str = "output",
     qgen_prefix: str = "qgen",
-    base_ckpt: str = "distilbert-base-uncased",
+    base_ckpt: str = "sentence-transformers/distiluse-base-multilingual-cased-v2",
     generator: str = "BeIR/query-gen-msmarco-t5-base-v1",
     cross_encoder: str = "cross-encoder/ms-marco-MiniLM-L-6-v2",
     batch_size_gpl: int = 32,
@@ -78,7 +78,7 @@ def train(
     #### Also resize the corpus for efficient training if required  ####
     os.makedirs(path_to_generated_data, exist_ok=True)
     if "corpus.jsonl" not in os.listdir(path_to_generated_data):
-        logger.info(
+        print(
             f"Corpus does not exist in {path_to_generated_data}. Now clone the one from the evaluation path {evaluation_data}"
         )
         assert "corpus.jsonl" in os.listdir(
@@ -89,7 +89,7 @@ def train(
                 new_size = math.ceil(
                     250e3 / 3
                 )  # Here use ceil to make the QPP == 3 if the corpus is large enough
-                logger.info(f"Automatically set `new_size` to {new_size}")
+                print(f"Automatically set `new_size` to {new_size}")
             resize(evaluation_data, path_to_generated_data, new_size, use_train_qrels)
         else:
             corpus_path = os.path.join(evaluation_data, "corpus.jsonl")
@@ -107,7 +107,7 @@ def train(
             )  # Here use ceil to guarantee the QPP will not be too small
         else:
             queries_per_passage = 3
-        logger.info(f"Automatically set `queries_per_passage` to {queries_per_passage}")
+        print(f"Automatically set `queries_per_passage` to {queries_per_passage}")
 
     #### Synthetic query generation ####
     #### This will be skipped if there is an existing `gen-queries.jsonl`file under `path_to_generated_data` ####
@@ -120,7 +120,7 @@ def train(
         if "qrels" in os.listdir(
             path_to_generated_data
         ) and "queries.jsonl" in os.listdir(path_to_generated_data):
-            logger.info("Loading from existing labeled data")
+            print("Loading from existing labeled data")
             corpus, gen_queries, gen_qrels = GenericDataLoader(
                 path_to_generated_data
             ).load(split="train")
@@ -128,7 +128,7 @@ def train(
             assert (
                 evaluation_data is not None
             ), "To use this feature `use_train_qrels == True`, please specify the `evaluation_data`, which should contain the labeled queries and qrels"
-            logger.info(
+            print(
                 "Loading qrels and queries from labeled data under the path of `evaluation_data`"
             )
             assert "qrels" in os.listdir(
@@ -151,12 +151,12 @@ def train(
     elif f"{qgen_prefix}-qrels" in os.listdir(
         path_to_generated_data
     ) and f"{qgen_prefix}-queries.jsonl" in os.listdir(path_to_generated_data):
-        logger.info("Loading from existing generated data")
+        print("Loading from existing generated data")
         corpus, gen_queries, gen_qrels = GenericDataLoader(
             path_to_generated_data, prefix=qgen_prefix
         ).load(split="train")
     else:
-        logger.info("No generated queries found. Now generating it")
+        print("No generated queries found. Now generating it")
         assert "corpus.jsonl" in os.listdir(
             path_to_generated_data
         ), "At least corpus should exist!"
@@ -175,9 +175,9 @@ def train(
     #### Hard-negative mining ####
     #### This will be skipped if there is an existing `hard-negatives.jsonl` file under `path_to_generated_data` ####
     if "hard-negatives.jsonl" in os.listdir(path_to_generated_data):
-        logger.info("Using exisiting hard-negative data")
+        print("Using exisiting hard-negative data")
     else:
-        logger.info("No hard-negative data found. Now mining it")
+        print("No hard-negative data found. Now mining it")
         miner = NegativeMiner(
             path_to_generated_data,
             qgen_prefix,
@@ -192,9 +192,9 @@ def train(
     #### This will be skipped if there is an existing `gpl-training-data.tsv` file under `path_to_generated_data` ####
     gpl_training_data_fname = "gpl-training-data.tsv"
     if gpl_training_data_fname in os.listdir(path_to_generated_data):
-        logger.info("Using existing GPL-training data")
+        print("Using existing GPL-training data")
     else:
-        logger.info("No GPL-training data found. Now generating it via pseudo labeling")
+        print("No GPL-training data found. Now generating it via pseudo labeling")
         pseudo_labeler = PseudoLabeler(
             path_to_generated_data,
             gen_queries,
@@ -213,7 +213,7 @@ def train(
             )
 
         new_min, new_max = rescale_range
-        logger.info(f"Doing rescaling with new range [{new_min}, {new_max}]")
+        print(f"Doing rescaling with new range [{new_min}, {new_max}]")
         gpl_training_data_fname = rescale_gpl_training_data(
             path_to_generated_data, new_min, new_max
         )  # This will rescale the margins and generate a new file
@@ -231,12 +231,12 @@ def train(
     if not os.path.exists(ckpt_dir) or (
         os.path.exists(ckpt_dir) and not os.listdir(ckpt_dir)
     ):
-        logger.info("Now doing training on the generated data with the MarginMSE loss")
+        print("Now doing training on the generated data with the MarginMSE loss")
         #### It can load checkpoints in both SBERT-format (recommended) and Huggingface-format
         model: SentenceTransformer = load_sbert(base_ckpt, pooling, max_seq_length)
 
         fpath_gpl_data = os.path.join(path_to_generated_data, gpl_training_data_fname)
-        logger.info(f"Load GPL training data from {fpath_gpl_data}")
+        print(f"Load GPL training data from {fpath_gpl_data}")
         train_dataset = GenerativePseudoLabelingDataset(
             fpath_gpl_data, gen_queries, corpus
         )
@@ -262,11 +262,11 @@ def train(
             use_amp=use_amp,
         )
     else:
-        logger.info("Trained GPL model found. Now skip training")
+        print("Trained GPL model found. Now skip training")
 
     ### Evaluate the model if required ###
     if do_evaluation:
-        logger.info("Doing evaluation for GPL")
+        print("Doing evaluation for GPL")
         evaluate(
             evaluation_data,
             evaluation_output,
@@ -286,7 +286,7 @@ def train(
         if not os.path.exists(ckpt_dir) or (
             os.path.exists(ckpt_dir) and not os.listdir(ckpt_dir)
         ):
-            logger.info("Now training MNRL on generated data")
+            print("Now training MNRL on generated data")
             mnrl(
                 path_to_generated_data,
                 base_ckpt,
@@ -296,9 +296,9 @@ def train(
                 qgen_prefix,
             )
         else:
-            logger.info("Trained MNRL model found. Now skip training")
+            print("Trained MNRL model found. Now skip training")
 
-        logger.info("Doing evaluation for QGen (MNRL)")
+        print("Doing evaluation for QGen (MNRL)")
         evaluate(
             evaluation_data,
             mnrl_evaluation_output,

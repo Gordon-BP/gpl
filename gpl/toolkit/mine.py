@@ -24,7 +24,7 @@ class NegativeMiner(object):
         use_train_qrels: bool = False,
     ):
         if use_train_qrels:
-            logger.info("Using labeled qrels to construct the hard-negative data")
+            print("Using labeled qrels to construct the hard-negative data")
             self.corpus, self.gen_queries, self.gen_qrels = GenericDataLoader(
                 generated_path
             ).load(split="train")
@@ -54,7 +54,7 @@ class NegativeMiner(object):
         return " ".join([self.corpus[did]["title"], self.corpus[did]["text"]])
 
     def _mine_sbert(self, model_name, score_function):
-        logger.info(f"Mining with {model_name}")
+        print(f"Mining with {model_name}")
         assert score_function in ["dot", "cos_sim"]
         normalize_embeddings = False
         if score_function == "cos_sim":
@@ -95,7 +95,7 @@ class NegativeMiner(object):
         return result
 
     def _mine_bm25(self):
-        logger.info(f"Mining with bm25")
+        print(f"Mining with bm25")
         result = {}
         docs = list(map(self._get_doc, self.corpus.keys()))
         dids = np.array(list(self.corpus.keys()))
@@ -127,7 +127,7 @@ class NegativeMiner(object):
             else:
                 hard_negatives[retriever] = self._mine_sbert(retriever, score_function)
 
-        logger.info("Combining all the data")
+        print("Combining all the data")
         result_jsonl = []
         for qid, pos_dids in tqdm.tqdm(self.gen_qrels.items()):
             line = {
@@ -137,11 +137,11 @@ class NegativeMiner(object):
             }
             result_jsonl.append(line)
 
-        logger.info(f"Saving data to {self.output_path}")
+        print(f"Saving data to {self.output_path}")
         with open(self.output_path, "w", encoding='utf-8') as f:
             for line in result_jsonl:
                 f.write(json.dumps(line, ensure_ascii=False) + "\n")
-        logger.info("Done")
+        print("Done")
 
 
 if __name__ == "__main__":

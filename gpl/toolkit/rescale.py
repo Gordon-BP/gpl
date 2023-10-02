@@ -42,7 +42,7 @@ def rescale_gpl_training_data(
     frescaled = f"gpl-training-data.{suffix}.tsv"
     fpath_rescaled = os.path.join(data_dir, frescaled)
     if os.path.exists(fpath_rescaled):
-        logger.info("Found the rescaled data has already existed. Escaped rescaling")
+        print("Found the rescaled data has already existed. Escaped rescaling")
         return frescaled
 
     with open(fpath, "r", encoding='utf-8') as fin, open(fpath_rescaled, "w") as fout:
@@ -57,7 +57,7 @@ def rescale_gpl_training_data(
             line = "\t".join(items) + "\n"
             fout.write(line)
 
-    logger.info(
+    print(
         f"Rescaled the pseudo labels to range [{new_min}, {new_max}] from the original range [{org_min}, {org_max}]. The output is {fpath_rescaled}"
     )
     return frescaled
